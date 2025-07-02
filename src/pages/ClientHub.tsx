@@ -4,14 +4,11 @@ import {
   Users, 
   Plus, 
   Search, 
-  Send,
   BookOpen,
-  Clock,
   CheckCircle,
   MessageSquare,
   Filter,
   User,
-  Calendar,
   TrendingUp
 } from 'lucide-react'
 
