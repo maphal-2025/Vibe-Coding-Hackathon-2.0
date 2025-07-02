@@ -11,8 +11,7 @@ import {
   Users,
   Play,
   Download,
-  Bookmark,
-  Tag
+  Bookmark
 } from 'lucide-react'
 
 interface Resource {

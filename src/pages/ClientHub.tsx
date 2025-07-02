@@ -27,7 +27,6 @@ interface Client {
 const ClientHub: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
-  const [showAssignModal, setShowAssignModal] = useState(false)
 
   // Mock client data
   const clients: Client[] = [
@@ -81,12 +80,7 @@ const ClientHub: React.FC = () => {
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const availableModules = [
-    { id: '1', title: 'Introduction to CBT', category: 'CBT', duration: 15 },
-    { id: '2', title: 'Mindfulness Techniques', category: 'Mindfulness', duration: 10 },
-    { id: '3', title: 'Cognitive Distortions', category: 'CBT', duration: 12 },
-    { id: '4', title: 'Grounding Techniques', category: 'Mindfulness', duration: 8 }
-  ]
+
 
   const stats = [
     {
@@ -127,10 +121,7 @@ const ClientHub: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Client Hub</h1>
           <p className="text-gray-600 mt-1">Manage client assignments and track progress</p>
         </div>
-        <button
-          onClick={() => setShowAssignModal(true)}
-          className="btn-primary flex items-center space-x-2"
-        >
+        <button className="btn-primary flex items-center space-x-2">
           <Plus className="w-4 h-4" />
           <span>Add Client</span>
         </button>

@@ -12,11 +12,9 @@ import {
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { useLearning } from '../contexts/LearningContext'
-import { useAuth } from '../contexts/AuthContext'
 
 const Dashboard: React.FC = () => {
   const { modules } = useLearning()
-  const { user } = useAuth()
 
   // Mock data for charts
   const weeklyProgress = [

@@ -7,12 +7,11 @@ import {
   Clock,
   Target,
   BookOpen,
-  CheckCircle,
-  BarChart3
+  CheckCircle
 } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useLearning } from '../contexts/LearningContext'
-import { format, subDays, startOfWeek, endOfWeek } from 'date-fns'
+import { format, subDays } from 'date-fns'
 
 const Progress: React.FC = () => {
   const { modules } = useLearning()

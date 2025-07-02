@@ -8,8 +8,7 @@ import {
   Filter,
   Search,
   Star,
-  Users,
-  TrendingUp
+  Users
 } from 'lucide-react'
 import { useLearning } from '../contexts/LearningContext'
 

@@ -5,7 +5,6 @@ import {
   Mail, 
   Phone, 
   MapPin, 
-  Calendar,
   Edit,
   Save,
   X,
@@ -113,7 +112,7 @@ const Profile: React.FC = () => {
             </div>
             
             <h2 className="text-xl font-semibold text-gray-900 mb-1">{profileData.name}</h2>
-            <p className="text-sm text-gray-600 mb-2">{user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}</p>
+            <p className="text-sm text-gray-600 mb-2">{user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}</p>
             <p className="text-sm text-gray-500 mb-4">{profileData.location}</p>
             
             <div className="grid grid-cols-3 gap-4 py-4 border-t border-gray-200">
