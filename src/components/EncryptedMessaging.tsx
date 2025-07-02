@@ -4,8 +4,6 @@ import {
   MessageSquare, 
   Send, 
   Shield, 
-  User, 
-  Clock,
   Paperclip,
   MoreVertical
 } from 'lucide-react'

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Smile, Meh, Frown, Heart, Brain, MessageCircle } from 'lucide-react'
+import { Heart, Brain, MessageCircle } from 'lucide-react'
 
 interface MoodEntry {
   date: string
