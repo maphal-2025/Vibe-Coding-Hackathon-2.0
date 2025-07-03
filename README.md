@@ -1,6 +1,7 @@
 # 🧠 MindScape – Microlearning for Mental Wellness
 
 **MindScape** is a mobile-first platform that delivers bite-sized, adaptive educational content to psychologists, mental health students, and therapy clients. Designed to support lifelong learning, clinical development, and reflective practice, MindScape empowers users to learn at their own pace—anytime, anywhere.
+link:https://www.mindscapeapp.io/
 
 ## ✨ Features
 
