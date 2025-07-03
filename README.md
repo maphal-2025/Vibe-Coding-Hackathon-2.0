@@ -2,6 +2,8 @@
 
 **MindScape** is a mobile-first platform that delivers bite-sized, adaptive educational content to psychologists, mental health students, and therapy clients. Designed to support lifelong learning, clinical development, and reflective practice, MindScape empowers users to learn at their own pace—anytime, anywhere.
 link:https://www.mindscapeapp.io/
+Pitch: https://presenti.ai/app/editor/wAcjRiHF3haUF8DmNY0pxg
+Video:https://1drv.ms/v/c/e40b74351a2e463a/EZgq2no7Fo1AuNzup9ts0IsByhX79Xjcwyzkr5GO4g1Y0Q?e=WhfdDW
 
 ## ✨ Features
 
