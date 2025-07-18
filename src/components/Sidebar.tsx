@@ -1,85 +1,170 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { 
-  Home, 
-  BookOpen, 
-  TrendingUp, 
-  Users, 
-  Library, 
+  LayoutDashboard, 
+  Sprout, 
+  CloudRain, 
+  TestTube, 
+  TrendingUp,
+  Bot,
   User,
-  Brain,
-  LogOut
+  Wheat,
+  Satellite,
+  BarChart3
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
-const Sidebar: React.FC = () => {
-  const { user, logout } = useAuth()
+const Sidebar = () => {
+  const location = useLocation()
+  const { user } = useAuth()
 
-  const navigation = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Dashboard', href: '/dashboard', icon: TrendingUp },
-    { name: 'Learning', href: '/learning', icon: BookOpen },
-    { name: 'Progress', href: '/progress', icon: TrendingUp },
-    { name: 'Client Hub', href: '/client-hub', icon: Users },
-    { name: 'Library', href: '/library', icon: Library },
-    { name: 'Profile', href: '/profile', icon: User },
+  const navigationItems = [
+    {
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutDashboard,
+      description: 'Farm overview & insights'
+    },
+    {
+      name: 'Crop Monitoring',
+      href: '/crop-monitoring',
+      icon: Sprout,
+      description: 'Real-time crop health'
+    },
+    {
+      name: 'Weather Forecast',
+      href: '/weather',
+      icon: CloudRain,
+      description: 'Climate predictions'
+    },
+    {
+      name: 'Soil Analysis',
+      href: '/soil-analysis',
+      icon: TestTube,
+      description: 'Soil health metrics'
+    },
+    {
+      name: 'Market Insights',
+      href: '/market-insights',
+      icon: TrendingUp,
+      description: 'Pricing & demand trends'
+    },
+    {
+      name: 'AI Assistant',
+      href: '/ai-assistant',
+      icon: Bot,
+      description: 'Farming guidance chatbot'
+    }
   ]
 
+  const isActive = (href: string) => location.pathname === href
+
   return (
-    <div className="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
-            <Brain className="w-6 h-6 text-white" />
+    <div className="flex h-screen w-64 flex-col bg-white shadow-lg">
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-center w-10 h-10 bg-green-600 rounded-lg">
+          <Wheat className="h-6 w-6 text-white" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">AgriSense</h1>
+          <p className="text-xs text-green-600">Smart Farming AI</p>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {navigationItems.map((item) => {
+          const Icon = item.icon
+          return (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={`
+                group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors
+                ${
+                  isActive(item.href)
+                    ? 'bg-green-100 text-green-900 border-r-2 border-green-600'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-900'
+                }
+              `}
+            >
+              <Icon
+                className={`
+                  mr-3 h-5 w-5 transition-colors
+                  ${
+                    isActive(item.href)
+                      ? 'text-green-600'
+                      : 'text-gray-400 group-hover:text-green-600'
+                  }
+                `}
+              />
+              <div className="flex-1">
+                <div className="font-medium">{item.name}</div>
+                <div className="text-xs text-gray-500 group-hover:text-green-700">
+                  {item.description}
+                </div>
+              </div>
+            </Link>
+          )
+        })}
+      </nav>
+
+      {/* Farm Stats */}
+      <div className="px-3 py-4 border-t border-gray-200">
+        <div className="bg-green-50 rounded-lg p-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Satellite className="h-4 w-4 text-green-600" />
+            <span className="text-sm font-medium text-green-900">Farm Stats</span>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">MindScape</h1>
-            <p className="text-sm text-gray-500">Mental Wellness Learning</p>
+          <div className="space-y-1 text-xs text-green-700">
+            <div className="flex justify-between">
+              <span>Total Area:</span>
+              <span className="font-medium">25.5 ha</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Active Crops:</span>
+              <span className="font-medium">4 types</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Health Score:</span>
+              <span className="font-medium text-green-600">94%</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.href}
-            className={({ isActive }) =>
-              `flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                isActive
-                  ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`
+      {/* User Profile */}
+      <div className="px-3 py-4 border-t border-gray-200">
+        <Link
+          to="/profile"
+          className={`
+            group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors
+            ${
+              isActive('/profile')
+                ? 'bg-green-100 text-green-900'
+                : 'text-gray-700 hover:bg-green-50 hover:text-green-900'
             }
-          >
-            <item.icon className="w-5 h-5" />
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
-      </nav>
-
-      {user && (
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3 mb-3">
+          `}
+        >
+          {user?.avatar ? (
             <img
-              src={user.avatar || 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2'}
+              src={user.avatar}
               alt={user.name}
-              className="w-8 h-8 rounded-full object-cover"
+              className="mr-3 h-8 w-8 rounded-full object-cover"
             />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+          ) : (
+            <User className="mr-3 h-8 w-8 rounded-full bg-gray-200 p-1 text-gray-400" />
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-gray-900 truncate">
+              {user?.name || 'Farmer'}
+            </div>
+            <div className="text-xs text-gray-500 truncate">
+              {user?.farmLocation || 'Farm Location'}
             </div>
           </div>
-          <button
-            onClick={logout}
-            className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign out</span>
-          </button>
-        </div>
-      )}
+        </Link>
+      </div>
     </div>
   )
 }
