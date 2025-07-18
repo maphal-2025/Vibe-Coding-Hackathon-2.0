@@ -1,252 +1,386 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
 import { 
+  Thermometer, 
+  Droplets, 
+  Wind, 
   TrendingUp, 
-  Clock, 
-  Award, 
-  Target,
-  Calendar,
-  BookOpen,
-  Users,
-  BarChart3
+  TrendingDown,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Sprout,
+  BarChart3,
+  Satellite,
+  Bot,
+  RefreshCw
 } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { useLearning } from '../contexts/LearningContext'
+import { useFarm } from '../contexts/FarmContext'
 import { useAuth } from '../contexts/AuthContext'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts'
 
-const Dashboard: React.FC = () => {
-  const { modules } = useLearning()
+const Dashboard = () => {
   const { user } = useAuth()
+  const { 
+    farm, 
+    crops, 
+    soilData, 
+    weatherData, 
+    marketData, 
+    aiRecommendations,
+    isLoadingWeather,
+    refreshWeatherData,
+    refreshSoilData,
+    refreshMarketData
+  } = useFarm()
 
-  // Mock data for charts
-  const weeklyProgress = [
-    { day: 'Mon', minutes: 25 },
-    { day: 'Tue', minutes: 45 },
-    { day: 'Wed', minutes: 30 },
-    { day: 'Thu', minutes: 60 },
-    { day: 'Fri', minutes: 35 },
-    { day: 'Sat', minutes: 20 },
-    { day: 'Sun', minutes: 40 }
+  const [selectedTimeRange, setSelectedTimeRange] = useState('7d')
+
+  // Calculate summary stats
+  const totalCrops = crops.length
+  const healthyCrops = crops.filter(crop => crop.healthStatus === 'healthy').length
+  const warningCrops = crops.filter(crop => crop.healthStatus === 'warning').length
+  const criticalCrops = crops.filter(crop => crop.healthStatus === 'critical').length
+  const totalYield = crops.reduce((sum, crop) => sum + crop.predictedYield, 0)
+
+  // Chart data
+  const cropHealthData = [
+    { name: 'Healthy', value: healthyCrops, color: '#10B981' },
+    { name: 'Warning', value: warningCrops, color: '#F59E0B' },
+    { name: 'Critical', value: criticalCrops, color: '#EF4444' }
   ]
 
-  const categoryData = [
-    { name: 'CBT', value: 35, color: '#0ea5e9' },
-    { name: 'Mindfulness', value: 25, color: '#d946ef' },
-    { name: 'Trauma Therapy', value: 20, color: '#22c55e' },
-    { name: 'Ethics', value: 15, color: '#f59e0b' },
-    { name: 'Other', value: 5, color: '#6b7280' }
+  const yieldTrendData = [
+    { date: 'Jan', yield: 45, target: 50 },
+    { date: 'Feb', yield: 52, target: 55 },
+    { date: 'Mar', yield: 48, target: 52 },
+    { date: 'Apr', yield: 61, target: 58 },
+    { date: 'May', yield: 55, target: 60 },
+    { date: 'Jun', yield: 67, target: 65 },
+    { date: 'Jul', yield: 62, target: 68 }
   ]
 
-  const stats = [
-    {
-      label: 'Total Learning Time',
-      value: '47 hours',
-      change: '+12%',
-      icon: Clock,
-      color: 'text-primary-600 bg-primary-50'
-    },
-    {
-      label: 'Modules Completed',
-      value: modules.filter(m => m.completed).length.toString(),
-      change: '+3 this week',
-      icon: Award,
-      color: 'text-accent-600 bg-accent-50'
-    },
-    {
-      label: 'Current Streak',
-      value: '7 days',
-      change: 'Personal best!',
-      icon: Target,
-      color: 'text-secondary-600 bg-secondary-50'
-    },
-    {
-      label: 'Avg. Session',
-      value: '23 min',
-      change: '+5 min',
-      icon: BarChart3,
-      color: 'text-orange-600 bg-orange-50'
-    }
-  ]
-
-  const upcomingGoals = [
-    { title: 'Complete CBT Fundamentals', deadline: '3 days', progress: 75 },
-    { title: 'Trauma-Informed Care Certification', deadline: '1 week', progress: 45 },
-    { title: 'Mindfulness Practice Module', deadline: '2 weeks', progress: 20 }
-  ]
+  const getCurrentTime = () => {
+    return new Date().toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Learning Dashboard</h1>
-          <p className="text-gray-600 mt-1">Track your progress and insights</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome back, {user?.name?.split(' ')[0]}! 🌱
+          </h1>
+          <p className="mt-2 text-gray-600">
+            {getCurrentTime()} • {farm?.name}
+          </p>
         </div>
-        <div className="flex items-center space-x-3">
-          <Calendar className="w-5 h-5 text-gray-400" />
-          <span className="text-sm text-gray-600">
-            {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </span>
-        </div>
-      </motion.div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="card"
+        <div className="mt-4 sm:mt-0 flex gap-3">
+          <button
+            onClick={refreshWeatherData}
+            disabled={isLoadingWeather}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">{stat.label}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                <p className="text-sm text-accent-600 mt-1">{stat.change}</p>
-              </div>
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="w-6 h-6" />
-              </div>
+            <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingWeather ? 'animate-spin' : ''}`} />
+            Refresh Data
+          </button>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Sprout className="h-8 w-8 text-green-600" />
             </div>
-          </motion.div>
-        ))}
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-gray-900">Total Crops</h3>
+              <p className="text-3xl font-bold text-green-600">{totalCrops}</p>
+              <p className="text-sm text-gray-500">{healthyCrops} healthy, {warningCrops} need attention</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <BarChart3 className="h-8 w-8 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-gray-900">Predicted Yield</h3>
+              <p className="text-3xl font-bold text-blue-600">{totalYield.toFixed(1)} tons</p>
+              <p className="text-sm text-gray-500">This season estimate</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Thermometer className="h-8 w-8 text-orange-600" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-gray-900">Temperature</h3>
+              <p className="text-3xl font-bold text-orange-600">{weatherData?.current.temperature}°C</p>
+              <p className="text-sm text-gray-500">Optimal for growth</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <Droplets className="h-8 w-8 text-cyan-600" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-gray-900">Soil Moisture</h3>
+              <p className="text-3xl font-bold text-cyan-600">{soilData?.moisture}%</p>
+              <p className="text-sm text-gray-500">Good level</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Weekly Progress Chart */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="card"
-        >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Weekly Learning Activity</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={weeklyProgress}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="day" stroke="#64748b" />
-              <YAxis stroke="#64748b" />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'white', 
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="minutes" 
-                stroke="#0ea5e9" 
-                strokeWidth={3}
-                dot={{ fill: '#0ea5e9', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#0ea5e9', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </motion.div>
-
-        {/* Category Distribution */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="card"
-        >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Learning Categories</h2>
-          <div className="flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={120}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {categoryData.map((category) => (
-              <div key={category.name} className="flex items-center space-x-2">
-                <div 
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                ></div>
-                <span className="text-sm text-gray-600">{category.name}</span>
-                <span className="text-sm font-medium text-gray-900">{category.value}%</span>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* AI Recommendations */}
+        <div className="lg:col-span-2 bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Bot className="h-6 w-6 text-purple-600 mr-2" />
+                <h2 className="text-xl font-semibold text-gray-900">AI Recommendations</h2>
               </div>
-            ))}
+              <span className="text-sm text-gray-500">Updated 2 hours ago</span>
+            </div>
           </div>
-        </motion.div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {aiRecommendations.slice(0, 4).map((recommendation, index) => (
+                <div key={index} className="flex items-start space-x-3 p-4 bg-purple-50 rounded-lg">
+                  <div className="flex-shrink-0">
+                    {recommendation.includes('Consider') ? (
+                      <AlertCircle className="h-5 w-5 text-orange-500 mt-0.5" />
+                    ) : (
+                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-900">{recommendation}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Crop Health Overview */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Crop Health</h2>
+          </div>
+          <div className="p-6">
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={cropHealthData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={60}
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {cropHealthData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 space-y-2">
+              {cropHealthData.map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div 
+                      className="w-3 h-3 rounded-full mr-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm text-gray-600">{item.name}</span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Upcoming Goals */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-2 card"
-        >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Upcoming Goals</h2>
-          <div className="space-y-4">
-            {upcomingGoals.map((goal, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-900">{goal.title}</h3>
-                  <span className="text-sm text-gray-500">{goal.deadline}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${goal.progress}%` }}
-                  ></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">{goal.progress}% complete</p>
-              </div>
-            ))}
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Yield Trends */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Yield Trends</h2>
+              <select 
+                value={selectedTimeRange}
+                onChange={(e) => setSelectedTimeRange(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+              >
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+                <option value="90d">Last 3 months</option>
+              </select>
+            </div>
           </div>
-        </motion.div>
+          <div className="p-6">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={yieldTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="yield" 
+                    stroke="#10B981" 
+                    strokeWidth={2}
+                    name="Actual Yield"
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="target" 
+                    stroke="#6B7280" 
+                    strokeDasharray="5 5"
+                    name="Target Yield"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
 
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card"
-        >
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
-          <div className="space-y-3">
-            <button className="w-full flex items-center space-x-3 p-3 bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors duration-200">
-              <BookOpen className="w-5 h-5" />
-              <span className="font-medium">Start New Module</span>
-            </button>
-            <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-              <Users className="w-5 h-5" />
-              <span className="font-medium">Assign to Client</span>
-            </button>
-            <button className="w-full flex items-center space-x-3 p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-              <TrendingUp className="w-5 h-5" />
-              <span className="font-medium">View Detailed Report</span>
-            </button>
+        {/* Market Prices */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Market Prices</h2>
           </div>
-        </motion.div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {marketData.map((market, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <h3 className="font-medium text-gray-900">{market.crop}</h3>
+                    <p className="text-sm text-gray-500">
+                      Demand: <span className={`capitalize font-medium ${
+                        market.demand === 'high' ? 'text-green-600' :
+                        market.demand === 'medium' ? 'text-yellow-600' : 'text-red-600'
+                      }`}>{market.demand}</span>
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-gray-900">${market.currentPrice}</p>
+                    <div className="flex items-center text-sm">
+                      {market.priceChange >= 0 ? (
+                        <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-red-500 mr-1" />
+                      )}
+                      <span className={market.priceChange >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        {Math.abs(market.priceChange)}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Weather and Soil Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Current Weather */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">Current Weather</h2>
+          </div>
+          <div className="p-6">
+            {weatherData && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <Thermometer className="h-8 w-8 text-orange-500 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{weatherData.current.temperature}°C</p>
+                  <p className="text-sm text-gray-500">Temperature</p>
+                </div>
+                <div className="text-center">
+                  <Droplets className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{weatherData.current.humidity}%</p>
+                  <p className="text-sm text-gray-500">Humidity</p>
+                </div>
+                <div className="text-center">
+                  <Wind className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-gray-900">{weatherData.current.windSpeed} km/h</p>
+                  <p className="text-sm text-gray-500">Wind Speed</p>
+                </div>
+                <div className="text-center">
+                  <div className="h-8 w-8 bg-blue-200 rounded-full mx-auto mb-2 flex items-center justify-center">
+                    <div className="h-4 w-4 bg-blue-500 rounded-full"></div>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{weatherData.current.precipitation}mm</p>
+                  <p className="text-sm text-gray-500">Precipitation</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Soil Conditions */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-gray-900">Soil Conditions</h2>
+              <Clock className="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          <div className="p-6">
+            {soilData && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">pH Level</span>
+                  <span className="text-lg font-bold text-green-600">{soilData.ph}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Nitrogen (N)</span>
+                  <span className="text-lg font-bold text-blue-600">{soilData.nitrogen} ppm</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Phosphorus (P)</span>
+                  <span className="text-lg font-bold text-purple-600">{soilData.phosphorus} ppm</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Potassium (K)</span>
+                  <span className="text-lg font-bold text-orange-600">{soilData.potassium} ppm</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Organic Matter</span>
+                  <span className="text-lg font-bold text-green-700">{soilData.organicMatter}%</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

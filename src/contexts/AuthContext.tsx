@@ -4,9 +4,13 @@ interface User {
   id: string
   name: string
   email: string
-  role: 'psychologist' | 'student' | 'client'
+  role: 'farmer' | 'agricultural_expert' | 'extension_officer'
   avatar?: string
-  specializations?: string[]
+  farmLocation?: string
+  farmSize?: number
+  cropTypes?: string[]
+  experienceYears?: number
+  preferredLanguage?: string
 }
 
 interface AuthContextType {
@@ -29,61 +33,106 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
+  // Initialize with demo user
   useEffect(() => {
-    // Simulate checking for existing session
-    const savedUser = localStorage.getItem('mindscape_user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
+    const demoUser: User = {
+      id: '1',
+      name: 'Maria Santos',
+      email: 'maria@greenvalleyfarm.com',
+      role: 'farmer',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
+      farmLocation: 'Sustainable Valley, Agriville',
+      farmSize: 25.5,
+      cropTypes: ['Corn', 'Soybeans', 'Wheat', 'Tomatoes'],
+      experienceYears: 12,
+      preferredLanguage: 'English'
     }
-    setIsLoading(false)
+    setUser(demoUser)
   }, [])
 
-  const login = async (email: string, _password: string) => {
+  const login = async (email: string, password: string) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const mockUser: User = {
-      id: '1',
-      name: 'Dr. Sarah Johnson',
-      email,
-      role: 'psychologist',
-      avatar: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      specializations: ['CBT', 'Trauma Therapy', 'Mindfulness']
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Demo login - in real app, this would validate credentials
+      const demoUser: User = {
+        id: '1',
+        name: 'Maria Santos',
+        email: email,
+        role: 'farmer',
+        avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
+        farmLocation: 'Sustainable Valley, Agriville',
+        farmSize: 25.5,
+        cropTypes: ['Corn', 'Soybeans', 'Wheat', 'Tomatoes'],
+        experienceYears: 12,
+        preferredLanguage: 'English'
+      }
+      
+      setUser(demoUser)
+      localStorage.setItem('agrisense_user', JSON.stringify(demoUser))
+    } catch (error) {
+      console.error('Login failed:', error)
+      throw new Error('Invalid credentials')
+    } finally {
+      setIsLoading(false)
     }
-    
-    setUser(mockUser)
-    localStorage.setItem('mindscape_user', JSON.stringify(mockUser))
-    setIsLoading(false)
   }
 
   const register = async (userData: Partial<User> & { password: string }) => {
     setIsLoading(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: userData.name || '',
-      email: userData.email || '',
-      role: userData.role || 'student',
-      specializations: userData.specializations || []
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const newUser: User = {
+        id: Date.now().toString(),
+        name: userData.name || 'New Farmer',
+        email: userData.email || '',
+        role: userData.role || 'farmer',
+        farmLocation: userData.farmLocation,
+        farmSize: userData.farmSize,
+        cropTypes: userData.cropTypes || [],
+        experienceYears: userData.experienceYears || 0,
+        preferredLanguage: userData.preferredLanguage || 'English'
+      }
+      
+      setUser(newUser)
+      localStorage.setItem('agrisense_user', JSON.stringify(newUser))
+    } catch (error) {
+      console.error('Registration failed:', error)
+      throw new Error('Registration failed')
+    } finally {
+      setIsLoading(false)
     }
-    
-    setUser(newUser)
-    localStorage.setItem('mindscape_user', JSON.stringify(newUser))
-    setIsLoading(false)
   }
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem('mindscape_user')
+    localStorage.removeItem('agrisense_user')
+  }
+
+  // Check for stored user on app load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('agrisense_user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
+  const value: AuthContextType = {
+    user,
+    login,
+    register,
+    logout,
+    isLoading
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

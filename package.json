@@ -1,7 +1,8 @@
 {
-  "name": "mindscape",
+  "name": "agrisense",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "AI-powered smart farming platform for zero hunger",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,11 +18,23 @@
     "framer-motion": "^10.16.5",
     "@headlessui/react": "^1.7.17",
     "recharts": "^2.8.0",
-    "date-fns": "^2.30.0"
+    "date-fns": "^2.30.0",
+    "@tensorflow/tfjs": "^4.15.0",
+    "plotly.js": "^2.26.1",
+    "react-plotly.js": "^2.6.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "axios": "^1.6.0",
+    "react-webcam": "^7.1.1",
+    "socket.io-client": "^4.7.2",
+    "i18next": "^23.6.0",
+    "react-i18next": "^13.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "@types/leaflet": "^1.9.8",
+    "@types/plotly.js": "^2.12.29",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.1.1",
