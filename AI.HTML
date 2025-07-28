@@ -17,6 +17,7 @@
             color: #333;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
@@ -135,8 +136,85 @@
                 font-size: 2rem;
             }
             
+            .subtitle {
+                font-size: 1rem;
+            }
+            
             .main-content {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .card h2 {
+                font-size: 1.3rem;
+            }
+            
+            .cta-button {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            header {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .card h2 {
+                font-size: 1.2rem;
+            }
+            
+            .feature-list li {
+                font-size: 0.9rem;
+                padding: 6px 0;
+            }
+            
+            .cta-button {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .card {
+                padding: 12px;
+            }
+            
+            .card h2 {
+                font-size: 1.1rem;
+            }
+            
+            .feature-list li {
+                font-size: 0.8rem;
             }
         }
     </style>
